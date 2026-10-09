@@ -1,0 +1,124 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  :root{--paper:#f7f4ec;--panel:#fffef8;--ink:#211f1a;--muted:#6b6a63;--faint:#948f81;--line:#e4ded0;--line2:#d6cfbf;}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;width:1280px;height:720px;background:var(--panel);font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);overflow:hidden}
+  .slide{width:1280px;height:720px;padding:32px 40px;display:flex;flex-direction:column}
+  .slide .head{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+  .slide .head .kick{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .slide .head h2{font-size:26px;margin:0;font-weight:700}
+  .slide .head .sub{font-size:14px;color:var(--muted)}
+  .slide .head .range{margin-left:auto;font-size:12px;color:var(--faint)}
+  .body{flex:1;display:grid;grid-template-columns:1.15fr .85fr;gap:32px;min-height:0}
+  .mapcol{display:flex;flex-direction:column;min-height:0}
+  .mapcol svg{width:100%;flex:1;min-height:0}
+  .legend{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:11px;color:var(--muted)}
+  .legend .grad{flex:1;height:10px;border-radius:6px;border:1px solid rgba(0,0,0,.08)}
+  .side{display:flex;flex-direction:column;gap:18px;min-height:0;overflow:hidden}
+  .side h3{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:0 0 8px}
+  .prio .row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .prio .row .l{width:230px;font-size:12.5px;color:var(--ink);flex-shrink:0}
+  .prio .row .t{flex:1;height:8px;border-radius:5px;background:var(--line);overflow:hidden}
+  .prio .row .t i{display:block;height:100%;border-radius:5px}
+  .prio .row .v{width:32px;text-align:right;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .distlist{font-size:11.5px;color:var(--muted);columns:2;column-gap:18px}
+  .distlist div{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dotted var(--line);break-inside:avoid}
+  .distlist span.v{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600}
+</style></head>
+<body>
+<div class="stage" id="stage"></div>
+<script>
+const PAYLOAD = {"DIMS":[{"key":"Physical","label":"Physical","sub":"Built environment","hue":"#2a78d6"},{"key":"Natural","label":"Natural","sub":"Natural environment","hue":"#008300"},{"key":"Social","label":"Social","sub":"Social","hue":"#e87ba4"},{"key":"Economic","label":"Economic","sub":"Economic and livelihoods","hue":"#eda100"},{"key":"Institutional","label":"Institutional","sub":"Institutional capacities","hue":"#4a3aa7"}],"districts":[{"name":"Seo-gu","parts":[[[731.7,210.5],[715.1,240.3],[670.4,235.4],[705.1,303.6],[655.8,343.7],[667,372.1],[670.1,424],[654.7,490.6],[629.3,482.4],[574,438],[505.6,435.3],[508.8,300.1],[484.9,287.6],[446.1,220.5],[513.5,182.6],[549.3,175.3],[565.3,125.9],[604.3,101.8],[682.1,150.3],[731.7,210.5]]],"cdri":{"Physical":{"score":69,"params":{"Electricity":72,"Water":67,"Sanitation and solid waste disposal":72,"Accessibility of roads":64,"Housing and land use":70}},"Social":{"score":57,"params":{"Population":61,"Health":56,"Education and awareness":62,"Social capital":51,"Community preparedness during a disaster":54}},"Economic":{"score":70,"params":{"Income":74,"Employment":73,"Household assets":66,"Finance and savings":66,"Budget and subsidy":72}},"Institutional":{"score":67,"params":{"Mainstreaming of DRR and CCA":69,"Effectiveness of crisis management framework":62,"Knowledge dissemination and management":65,"Institutional collaboration during a disaster":67,"Good governance":70}},"Natural":{"score":54,"params":{"Intensity or severity of natural hazards":56,"Frequency of natural hazards":53,"Ecosystem services":54,"Land use in natural terms":54,"Environmental policies":55}}}},{"name":"Gyeyang-gu","parts":[[[860,235.1],[811.4,299.8],[797.6,370.9],[667,372.1],[655.8,343.7],[705.1,303.6],[670.4,235.4],[715.1,240.3],[731.7,210.5],[766.3,207.3],[860,235.1]]],"cdri":{"Physical":{"score":64,"params":{"Electricity":65,"Water":64,"Sanitation and solid waste disposal":64,"Accessibility of roads":65,"Housing and land use":62}},"Social":{"score":61,"params":{"Population":61,"Health":62,"Education and awareness":63,"Social capital":59,"Community preparedness during a disaster":60}},"Economic":{"score":56,"params":{"Income":59,"Employment":57,"Household assets":50,"Finance and savings":57,"Budget and subsidy":56}},"Institutional":{"score":64,"params":{"Mainstreaming of DRR and CCA":65,"Effectiveness of crisis management framework":61,"Knowledge dissemination and management":66,"Institutional collaboration during a disaster":64,"Good governance":63}},"Natural":{"score":65,"params":{"Intensity or severity of natural hazards":61,"Frequency of natural hazards":67,"Ecosystem services":68,"Land use in natural terms":62,"Environmental policies":65}}}},{"name":"Bupyeong-gu","parts":[[[667,372.1],[797.6,370.9],[797.5,385.4],[769.1,394.5],[764,454.9],[811.4,494.4],[783.3,509.9],[704.6,477.6],[658.5,493.8],[654.7,490.6],[670.1,424],[667,372.1]]],"cdri":{"Physical":{"score":61,"params":{"Electricity":61,"Water":60,"Sanitation and solid waste disposal":60,"Accessibility of roads":60,"Housing and land use":63}},"Social":{"score":58,"params":{"Population":62,"Health":53,"Education and awareness":58,"Social capital":61,"Community preparedness during a disaster":55}},"Economic":{"score":60,"params":{"Income":59,"Employment":60,"Household assets":62,"Finance and savings":61,"Budget and subsidy":58}},"Institutional":{"score":61,"params":{"Mainstreaming of DRR and CCA":63,"Effectiveness of crisis management framework":61,"Knowledge dissemination and management":65,"Institutional collaboration during a disaster":58,"Good governance":60}},"Natural":{"score":40,"params":{"Intensity or severity of natural hazards":42,"Frequency of natural hazards":37,"Ecosystem services":44,"Land use in natural terms":39,"Environmental policies":36}}}},{"name":"Namdong-gu","parts":[[[831,494.3],[831.3,543.8],[813.8,599.1],[784.2,610.2],[753,674.4],[717.8,708.1],[636.9,689.2],[692.3,604.8],[689,572],[679.5,519.1],[658.5,493.8],[704.6,477.6],[783.3,509.9],[811.4,494.4],[831,494.3]]],"cdri":{"Physical":{"score":62,"params":{"Electricity":61,"Water":61,"Sanitation and solid waste disposal":65,"Accessibility of roads":65,"Housing and land use":60}},"Social":{"score":55,"params":{"Population":55,"Health":53,"Education and awareness":57,"Social capital":58,"Community preparedness during a disaster":51}},"Economic":{"score":66,"params":{"Income":65,"Employment":70,"Household assets":68,"Finance and savings":63,"Budget and subsidy":63}},"Institutional":{"score":62,"params":{"Mainstreaming of DRR and CCA":62,"Effectiveness of crisis management framework":60,"Knowledge dissemination and management":63,"Institutional collaboration during a disaster":66,"Good governance":60}},"Natural":{"score":46,"params":{"Intensity or severity of natural hazards":51,"Frequency of natural hazards":41,"Ecosystem services":48,"Land use in natural terms":43,"Environmental policies":46}}}},{"name":"Yeonsu-gu","parts":[[[689,572],[692.3,604.8],[636.9,689.2],[717.8,708.1],[611.7,797.3],[529.8,798.2],[519.4,725.6],[493.6,699.5],[493.7,596.7],[517.7,593.1],[562.3,590.5],[610.2,579.4],[639.2,592.1],[689,572]]],"cdri":{"Physical":{"score":68.33333333333333,"params":{"Electricity":69.33333333333333,"Water":69.33333333333333,"Sanitation and solid waste disposal":67.33333333333333,"Accessibility of roads":69.33333333333333,"Housing and land use":67.33333333333333}},"Social":{"score":62.333333333333336,"params":{"Population":65,"Health":61.666666666666664,"Education and awareness":61,"Social capital":63,"Community preparedness during a disaster":61}},"Economic":{"score":69,"params":{"Income":68.33333333333333,"Employment":70.33333333333333,"Household assets":68,"Finance and savings":69.66666666666667,"Budget and subsidy":68.66666666666667}},"Institutional":{"score":66,"params":{"Mainstreaming of DRR and CCA":64.66666666666667,"Effectiveness of crisis management framework":65.33333333333333,"Knowledge dissemination and management":64.66666666666667,"Institutional collaboration during a disaster":70.33333333333333,"Good governance":64.66666666666667}},"Natural":{"score":56.666666666666664,"params":{"Intensity or severity of natural hazards":57.666666666666664,"Frequency of natural hazards":57.333333333333336,"Ecosystem services":57,"Land use in natural terms":55.333333333333336,"Environmental policies":56.666666666666664}}}},{"name":"Michuhol-gu","parts":[[[629.3,482.4],[654.7,490.6],[658.5,493.8],[679.5,519.1],[689,572],[639.2,592.1],[610.2,579.4],[562.3,590.5],[552.8,539],[577.5,502.1],[600.3,465.3],[629.3,482.4]]],"cdri":{"Physical":{"score":58,"params":{"Electricity":55,"Water":63,"Sanitation and solid waste disposal":54,"Accessibility of roads":61,"Housing and land use":55}},"Social":{"score":47,"params":{"Population":45,"Health":45,"Education and awareness":43,"Social capital":53,"Community preparedness during a disaster":51}},"Economic":{"score":57,"params":{"Income":60,"Employment":56,"Household assets":58,"Finance and savings":56,"Budget and subsidy":53}},"Institutional":{"score":62,"params":{"Mainstreaming of DRR and CCA":61,"Effectiveness of crisis management framework":64,"Knowledge dissemination and management":59,"Institutional collaboration during a disaster":62,"Good governance":63}},"Natural":{"score":40,"params":{"Intensity or severity of natural hazards":43,"Frequency of natural hazards":36,"Ecosystem services":40,"Land use in natural terms":42,"Environmental policies":38}}}},{"name":"Dong-gu","parts":[[[629.3,482.4],[600.3,465.3],[577.5,502.1],[528.8,466.5],[574,438],[629.3,482.4]]],"cdri":{"Physical":{"score":46,"params":{"Electricity":46,"Water":50,"Sanitation and solid waste disposal":45,"Accessibility of roads":43,"Housing and land use":47}},"Social":{"score":38,"params":{"Population":41,"Health":33,"Education and awareness":40,"Social capital":38,"Community preparedness during a disaster":36}},"Economic":{"score":42,"params":{"Income":42,"Employment":47,"Household assets":45,"Finance and savings":42,"Budget and subsidy":36}},"Institutional":{"score":57,"params":{"Mainstreaming of DRR and CCA":58,"Effectiveness of crisis management framework":58,"Knowledge dissemination and management":55,"Institutional collaboration during a disaster":56,"Good governance":59}},"Natural":{"score":42,"params":{"Intensity or severity of natural hazards":45,"Frequency of natural hazards":37,"Ecosystem services":44,"Land use in natural terms":47,"Environmental policies":38}}}},{"name":"Jung-gu","parts":[[[144.8,636.8],[199.8,697.4],[188.4,733.2],[147.7,743.1],[121.9,660.8],[144.8,636.8]],[[528.8,466.5],[577.5,502.1],[552.8,539],[562.3,590.5],[517.7,593.1],[484.2,566.2],[498.4,471.3],[528.8,466.5]],[[457.3,424.8],[435.8,474.6],[389.5,479.8],[323.9,508.4],[303,549.9],[201.2,614.3],[159.6,612.9],[114.1,554.9],[70.5,551.5],[40,505.2],[73.2,493.5],[183.2,418.5],[243.8,429],[278.3,417.8],[307.2,352.6],[432.8,393.2],[457.3,424.8]]],"cdri":{"Physical":{"score":51,"params":{"Electricity":50,"Water":56,"Sanitation and solid waste disposal":52,"Accessibility of roads":46,"Housing and land use":53}},"Social":{"score":43,"params":{"Population":48,"Health":42,"Education and awareness":43,"Social capital":42,"Community preparedness during a disaster":41}},"Economic":{"score":51,"params":{"Income":53,"Employment":54,"Household assets":48,"Finance and savings":49,"Budget and subsidy":49}},"Institutional":{"score":63,"params":{"Mainstreaming of DRR and CCA":63,"Effectiveness of crisis management framework":67,"Knowledge dissemination and management":65,"Institutional collaboration during a disaster":57,"Good governance":64}},"Natural":{"score":49,"params":{"Intensity or severity of natural hazards":50,"Frequency of natural hazards":49,"Ecosystem services":47,"Land use in natural terms":48,"Environmental policies":51}}}}],"domains":{"Physical":{"lo":46,"hi":69},"Social":{"lo":38,"hi":62.333333333333336},"Economic":{"lo":42,"hi":70},"Institutional":{"lo":57,"hi":67},"Natural":{"lo":40,"hi":65}},"vb":[900,900]};
+const TARGET_KEY = "Physical";
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function colorFor(hue,score,lo,hi){
+  const t = clamp((score-lo)/(hi-lo || 1),0,1);
+  const pct = 15 + t*80;
+  return `color-mix(in oklch, ${hue} ${pct.toFixed(1)}%, white)`;
+}
+function bbox(poly){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;poly.forEach(p=>{x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1]);});return[x0,y0,x1,y1];}
+function ringArea(poly){let a=0;for(let i=0,j=poly.length-1;i<poly.length;j=i++){a+=(poly[j][0]+poly[i][0])*(poly[j][1]-poly[i][1]);}return Math.abs(a/2);}
+function largestPart(parts){return parts.reduce((a,b)=>ringArea(b)>ringArea(a)?b:a);}
+
+function renderMap(d, lo, hi){
+  const [W,H]=PAYLOAD.vb;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<rect width="${W}" height="${H}" fill="#dfe8ec"/>`;
+  PAYLOAD.districts.forEach(dist=>{
+    const score = dist.cdri[d.key].score;
+    const fill = colorFor(d.hue, score, lo, hi);
+    dist.parts.forEach(part=>{
+      s+=`<polygon points="${part.map(p=>p.join(",")).join(" ")}" fill="${fill}" stroke="#fbf9f4" stroke-width="2.5"><title>${dist.name}: ${score.toFixed(0)}</title></polygon>`;
+    });
+  });
+  PAYLOAD.districts.forEach(dist=>{
+    const part = largestPart(dist.parts);
+    const [x0,y0,x1]=bbox(part);
+    const cx=(x0+x1)/2;
+    const score = dist.cdri[d.key].score;
+    const label=dist.name;
+    const wpx=Math.max(label.length*6.5, String(Math.round(score)).length*6.5)+20;
+    const cy=(bbox(part)[1]+bbox(part)[3])/2;
+    s+=`<g><rect x="${cx-wpx/2}" y="${cy-17}" width="${wpx}" height="34" rx="8" fill="#fffef8" fill-opacity=".93" stroke="#d6cfbf"/>`;
+    s+=`<text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="12" font-weight="700" fill="#211f1a">${label}</text>`;
+    s+=`<text x="${cx}" y="${cy+11}" text-anchor="middle" font-size="11" fill="#6b6a63">${score.toFixed(0)}</text></g>`;
+  });
+  s+=`</svg>`;
+  return s;
+}
+
+function renderPriorities(d){
+  const params = {};
+  PAYLOAD.districts.forEach(dist=>{
+    Object.entries(dist.cdri[d.key].params).forEach(([k,v])=>{
+      (params[k] ||= []).push(v);
+    });
+  });
+  const ranked = Object.entries(params).map(([k,vals])=>[k, vals.reduce((a,b)=>a+b,0)/vals.length])
+    .sort((a,b)=>a[1]-b[1]);
+  return ranked.map(([name,avg])=>{
+    const fill = colorFor(d.hue, avg, PAYLOAD.domains[d.key].lo-8, PAYLOAD.domains[d.key].hi+8);
+    return `<div class="row"><span class="l">${name}</span><span class="t"><i style="width:${avg}%;background:${fill}"></i></span><span class="v">${avg.toFixed(0)}</span></div>`;
+  }).join("");
+}
+
+function renderDistrictList(d){
+  const rows = PAYLOAD.districts.map(dist=>[dist.name, dist.cdri[d.key].score]).sort((a,b)=>a[1]-b[1]);
+  return rows.map(([n,v])=>`<div><span>${n}</span><span class="v">${v.toFixed(0)}</span></div>`).join("");
+}
+
+const d = PAYLOAD.DIMS.find(x=>x.key===TARGET_KEY);
+const i = PAYLOAD.DIMS.indexOf(d);
+const dom = PAYLOAD.domains[d.key];
+document.getElementById("stage").innerHTML = `<section class="slide">
+    <div class="head">
+      <span class="kick">${String(i+1).padStart(2,'0')} / 05</span>
+      <h2>${d.label}</h2>
+      <span class="sub">${d.sub}</span>
+      <span class="range">District scores range ${dom.lo.toFixed(0)}–${dom.hi.toFixed(0)} of 100</span>
+    </div>
+    <div class="body">
+      <div class="mapcol">
+        ${renderMap(d, dom.lo-8, dom.hi+8)}
+        <div class="legend">
+          <span>Weaker (${dom.lo.toFixed(0)})</span>
+          <div class="grad" style="background:linear-gradient(90deg, ${colorFor(d.hue,dom.lo,dom.lo-8,dom.hi+8)}, ${d.hue})"></div>
+          <span>Stronger (${dom.hi.toFixed(0)})</span>
+        </div>
+      </div>
+      <div class="side">
+        <div>
+          <h3>Priorities to strengthen (citywide avg, weakest first)</h3>
+          <div class="prio">${renderPriorities(d)}</div>
+        </div>
+        <div>
+          <h3>By district (weakest first)</h3>
+          <div class="distlist">${renderDistrictList(d)}</div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+</script>
+</body></html>
